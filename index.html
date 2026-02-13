@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6C63FF">
+    <title>🎤 Voice Changer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 18px 10px;
+            background: rgba(255,255,255,0.06);
+        }
+
+        .header h1 {
+            font-size: 22px;
+            background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6BCB77, #4D96FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p { font-size: 11px; opacity: 0.6; margin-top: 3px; }
+
+        .container { max-width: 500px; margin: 0 auto; padding: 12px; }
+
+        .tabs {
+            display: flex; gap: 4px; margin-bottom: 14px;
+            background: rgba(255,255,255,0.05); border-radius: 14px; padding: 4px;
+        }
+
+        .tab-btn {
+            flex: 1; padding: 10px 4px; border: none; border-radius: 11px;
+            background: transparent; color: #999; font-size: 12px;
+            font-weight: 700; cursor: pointer; transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #6C63FF, #9b59b6);
+            color: #fff; box-shadow: 0 3px 12px rgba(108,99,255,0.4);
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(255,255,255,0.07); border-radius: 14px;
+            padding: 16px; margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .card-title {
+            font-size: 13px; font-weight: 700; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        textarea {
+            width: 100%; min-height: 70px; background: rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.1); border-radius: 10px;
+            color: #fff; padding: 10px; font-size: 15px; resize: vertical;
+            font-family: inherit;
+        }
+
+        textarea:focus { outline: none; border-color: #6C63FF; }
+        textarea::placeholder { color: rgba(255,255,255,0.25); }
+
+        .grid-3 {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 6px; margin: 10px 0;
+        }
+
+        .grid-4 {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 5px; margin: 10px 0;
+        }
+
+        .choice-btn {
+            padding: 10px 4px; border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px; background: rgba(255,255,255,0.03);
+            color: #bbb; font-size: 10px; cursor: pointer;
+            text-align: center; transition: 0.3s;
+        }
+
+        .choice-btn .emoji { font-size: 22px; display: block; margin-bottom: 3px; }
+        .choice-btn.active { border-color: #6BCB77; background: rgba(107,203,119,0.12); color: #6BCB77; }
+        .choice-btn:active { transform: scale(0.95); }
+
+        .lang-row { display: flex; gap: 6px; margin: 10px 0; flex-wrap: wrap; }
+
+        .lang-btn {
+            padding: 7px 14px; border: 2px solid rgba(255,255,255,0.12);
+            border-radius: 18px; background: transparent; color: #bbb;
+            font-size: 12px; cursor: pointer; transition: 0.3s;
+        }
+
+        .lang-btn.active { border-color: #ffd93d; background: rgba(255,217,61,0.12); color: #ffd93d; }
+
+        .slider-group { margin: 10px 0; }
+
+        .slider-label {
+            display: flex; justify-content: space-between;
+            font-size: 11px; color: #999; margin-bottom: 5px;
+        }
+
+        .slider-label .val { color: #6C63FF; font-weight: 700; }
+
+        input[type="range"] {
+            width: 100%; height: 5px; -webkit-appearance: none;
+            background: rgba(255,255,255,0.1); border-radius: 3px; outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+            background: linear-gradient(135deg, #6C63FF, #9b59b6); cursor: pointer;
+        }
+
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            transition: 0.2s; margin-top: 8px;
+        }
+
+        .btn:active { transform: scale(0.97); }
+
+        .btn-purple {
+            background: linear-gradient(135deg, #6C63FF, #9b59b6);
+            color: #fff; box-shadow: 0 3px 15px rgba(108,99,255,0.3);
+        }
+
+        .btn-red {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: #fff;
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, #6BCB77, #27ae60);
+            color: #fff;
+        }
+
+        .btn-orange {
+            background: linear-gradient(135deg, #ffd93d, #f39c12);
+            color: #333;
+        }
+
+        .btn.speaking {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            animation: pulse 1s infinite;
+        }
+
+        .btn.recording { animation: pulse 0.7s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 3px 15px rgba(255,107,107,0.3); }
+            50% { box-shadow: 0 3px 25px rgba(255,107,107,0.6); }
+        }
+
+        .status {
+            text-align: center; padding: 6px; font-size: 11px;
+            color: #888; margin-top: 6px; min-height: 20px;
+        }
+
+        .status.ok { color: #6BCB77; }
+        .status.err { color: #ff6b6b; }
+        .status.wait { color: #ffd93d; }
+
+        .chips { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
+
+        .chip {
+            padding: 5px 10px; background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;
+            color: #bbb; font-size: 10px; cursor: pointer;
+        }
+
+        .chip:active { background: rgba(108,99,255,0.2); }
+
+        audio { width: 100%; margin: 8px 0; border-radius: 8px; }
+
+        .record-timer {
+            font-size: 34px; font-weight: 700; color: #ff6b6b;
+            text-align: center; margin: 12px 0; font-family: monospace;
+        }
+
+        .waveform {
+            width: 100%; height: 50px; background: rgba(0,0,0,0.2);
+            border-radius: 8px; margin: 8px 0; overflow: hidden;
+        }
+
+        .waveform canvas { width: 100%; height: 100%; }
+
+        .hidden { display: none !important; }
+
+        .info-box {
+            background: rgba(108,99,255,0.1); border: 1px solid rgba(108,99,255,0.2);
+            border-radius: 10px; padding: 10px; margin-top: 8px;
+            font-size: 11px; color: #aaa; line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🎤 Voice Changer Studio</h1>
+    <p>Text-to-Speech + Voice Effects • English • Hindi • Hinglish</p>
+</div>
+
+<div class="container">
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('tts', this)">✍️ Text to Speech</button>
+        <button class="tab-btn" onclick="openTab('record', this)">🎙️ Record</button>
+        <button class="tab-btn" onclick="openTab('upload', this)">📁 Upload</button>
+    </div>
+
+    <!-- ==================== TTS TAB ==================== -->
+    <div class="tab-content active" id="tab-tts">
+
+        <div class="card">
+            <div class="card-title">✍️ Type Your Text</div>
+            <textarea id="ttsText" placeholder="Type in English, Hindi or Hinglish...&#10;&#10;Examples:&#10;Hello, how are you?&#10;नमस्ते, आप कैसे हैं?&#10;Bhai kya haal hai?"></textarea>
+
+            <div class="card-title" style="margin-top:10px">🌐 Language</div>
+            <div class="lang-row">
+                <button class="lang-btn active" onclick="pickLang('en-US', this)">🇺🇸 English</button>
+                <button class="lang-btn" onclick="pickLang('hi-IN', this)">🇮🇳 Hindi</button>
+                <button class="lang-btn" onclick="pickLang('hinglish', this)">🔀 Hinglish</button>
+            </div>
+
+            <div class="card-title">💬 Quick Phrases</div>
+            <div class="chips">
+                <span class="chip" onclick="fillText('Hello! How are you doing today?')">Hello! How are you?</span>
+                <span class="chip" onclick="fillText('नमस्ते! आप कैसे हैं?')">नमस्ते!</span>
+                <span class="chip" onclick="fillText('Bhai kya scene hai?')">Kya scene hai?</span>
+                <span class="chip" onclick="fillText('Mujhe pizza khana hai yaar!')">Pizza khana hai!</span>
+                <span class="chip" onclick="fillText('I am a chipmunk! Fear me!')">I am a chipmunk!</span>
+                <span class="chip" onclick="fillText('Aaj mausam bahut accha hai!')">Mausam accha!</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">🎭 Voice Character</div>
+            <div class="grid-3">
+                <button class="choice-btn active" onclick="pickVoice('normal', this)"><span class="emoji">🗣️</span>Normal</button>
+                <button class="choice-btn" onclick="pickVoice('chipmunk', this)"><span class="emoji">🐿️</span>Chipmunk</button>
+                <button class="choice-btn" onclick="pickVoice('frog', this)"><span class="emoji">🐸</span>Frog</button>
+                <button class="choice-btn" onclick="pickVoice('rabbit', this)"><span class="emoji">🐰</span>Rabbit</button>
+                <button class="choice-btn" onclick="pickVoice('robot', this)"><span class="emoji">🤖</span>Robot</button>
+                <button class="choice-btn" onclick="pickVoice('monster', this)"><span class="emoji">👹</span>Monster</button>
+                <button class="choice-btn" onclick="pickVoice('ghost', this)"><span class="emoji">👻</span>Ghost</button>
+                <button class="choice-btn" onclick="pickVoice('baby', this)"><span class="emoji">👶</span>Baby</button>
+                <button class="choice-btn" onclick="pickVoice('alien', this)"><span class="emoji">👽</span>Alien</button>
+                <button class="choice-btn" onclick="pickVoice('demon', this)"><span class="emoji">😈</span>Demon</button>
+                <button class="choice-btn" onclick="pickVoice('giant', this)"><span class="emoji">🦕</span>Giant</button>
+                <button class="choice-btn" onclick="pickVoice('helium', this)"><span class="emoji">🎈</span>Helium</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">😊 Emotion</div>
+            <div class="grid-4">
+                <button class="choice-btn active" onclick="pickEmotion('neutral', this)"><span class="emoji">😐</span>Normal</button>
+                <button class="choice-btn" onclick="pickEmotion('happy', this)"><span class="emoji">😊</span>Happy</button>
+                <button class="choice-btn" onclick="pickEmotion('sad', this)"><span class="emoji">😢</span>Sad</button>
+                <button class="choice-btn" onclick="pickEmotion('angry', this)"><span class="emoji">😠</span>Angry</button>
+                <button class="choice-btn" onclick="pickEmotion('scared', this)"><span class="emoji">😨</span>Scared</button>
+                <button class="choice-btn" onclick="pickEmotion('excited', this)"><span class="emoji">🤩</span>Excited</button>
+                <button class="choice-btn" onclick="pickEmotion('whisper', this)"><span class="emoji">🤫</span>Whisper</button>
+                <button class="choice-btn" onclick="pickEmotion('dramatic', this)"><span class="emoji">🎭</span>Drama</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">🎛️ Fine Tune</div>
+            <div class="slider-group">
+                <div class="slider-label"><span>🎵 Pitch</span><span class="val" id="pitchVal">1.0</span></div>
+                <input type="range" id="pitchSlider" min="0.1" max="2.0" value="1.0" step="0.1"
+                    oninput="document.getElementById('pitchVal').textContent=this.value">
+            </div>
+            <div class="slider-group">
+                <div class="slider-label"><span>⏩ Speed</span><span class="val" id="speedVal">1.0</span></div>
+                <input type="range" id="speedSlider" min="0.3" max="2.5" value="1.0" step="0.1"
+                    oninput="document.getElementById('speedVal').textContent=this.value">
+            </div>
+            <div class="slider-group">
+                <div class="slider-label"><span>🔊 Volume</span><span class="val" id="volVal">1.0</span></div>
+                <input type="range" id="volSlider" min="0.1" max="1.0" value="1.0" step="0.1"
+                    oninput="document.getElementById('volVal').textContent=this.value">
+            </div>
+        </div>
+
+        <button class="btn btn-purple" id="speakBtn" onclick="doSpeak()">🔊 Speak It!</button>
+        <button class="btn btn-red hidden" id="stopBtn" onclick="doStop()">⏹️ Stop</button>
+
+        <div id="ttsStatus" class="status"></div>
+
+        <!-- DOWNLOAD SECTION - Always visible -->
+        <div class="card" style="margin-top:10px">
+            <div class="card-title">💾 Save Audio</div>
+            <p style="font-size:11px; color:#999; margin-bottom:8px;">
+                Click below to speak the text and record it. Keep your device volume up.
+            </p>
+            <button class="btn btn-orange" id="captureBtn" onclick="captureAudio()">
+                🎙️ Record Speech & Save
+            </button>
+            <audio id="ttsPlayer" controls class="hidden" style="width:100%; margin-top:8px;"></audio>
+            <button class="btn btn-green hidden" id="ttsDlBtn" onclick="downloadTTS()">
+                💾 Download Audio File
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== RECORD TAB ==================== -->
+    <div class="tab-content" id="tab-record">
+
+        <div class="card">
+            <div class="card-title">🎙️ Record Your Voice</div>
+            <div class="record-timer" id="recTimer">00:00</div>
+            <div class="waveform"><canvas id="waveCanvas"></canvas></div>
+            <button class="btn btn-red" id="recBtn" onclick="toggleRec()">🎙️ Start Recording</button>
+        </div>
+
+        <div class="card hidden" id="recPlayCard">
+            <div class="card-title">🔊 Your Recording</div>
+            <audio id="recAudio" controls></audio>
+        </div>
+
+        <div class="card hidden" id="recFxCard">
+            <div class="card-title">🎭 Choose Voice Effect</div>
+            <div class="grid-3">
+                <button class="choice-btn" onclick="recEffect('chipmunk',this)"><span class="emoji">🐿️</span>Chipmunk</button>
+                <button class="choice-btn" onclick="recEffect('frog',this)"><span class="emoji">🐸</span>Frog</button>
+                <button class="choice-btn" onclick="recEffect('rabbit',this)"><span class="emoji">🐰</span>Rabbit</button>
+                <button class="choice-btn" onclick="recEffect('robot',this)"><span class="emoji">🤖</span>Robot</button>
+                <button class="choice-btn" onclick="recEffect('monster',this)"><span class="emoji">👹</span>Monster</button>
+                <button class="choice-btn" onclick="recEffect('ghost',this)"><span class="emoji">👻</span>Ghost</button>
+                <button class="choice-btn" onclick="recEffect('baby',this)"><span class="emoji">👶</span>Baby</button>
+                <button class="choice-btn" onclick="recEffect('alien',this)"><span class="emoji">👽</span>Alien</button>
+                <button class="choice-btn" onclick="recEffect('helium',this)"><span class="emoji">🎈</span>Helium</button>
+            </div>
+        </div>
+
+        <div class="card hidden" id="recResultCard">
+            <div class="card-title">🎭 Transformed Voice</div>
+            <audio id="recResultAudio" controls></audio>
+            <button class="btn btn-green" onclick="downloadRec()" style="margin-top:8px">💾 Download</button>
+        </div>
+
+        <div id="recStatus" class="status"></div>
+    </div>
+
+    <!-- ==================== UPLOAD TAB ==================== -->
+    <div class="tab-content" id="tab-upload">
+
+        <div class="card">
+            <div class="card-title">📁 Upload Audio File</div>
+            <input type="file" id="fileInput" accept="audio/*" onchange="handleFile(this)"
+                style="width:100%; padding:14px; background:rgba(0,0,0,0.3);
+                border:2px dashed rgba(255,255,255,0.15); border-radius:10px;
+                color:#fff; font-size:13px;">
+        </div>
+
+        <div class="card hidden" id="upPlayCard">
+            <div class="card-title">🔊 Original Audio</div>
+            <audio id="upAudio" controls></audio>
+        </div>
+
+        <div class="card hidden" id="upFxCard">
+            <div class="card-title">🎭 Choose Voice Effect</div>
+            <div class="grid-3">
+                <button class="choice-btn" onclick="upEffect('chipmunk',this)"><span class="emoji">🐿️</span>Chipmunk</button>
+                <button class="choice-btn" onclick="upEffect('frog',this)"><span class="emoji">🐸</span>Frog</button>
+                <button class="choice-btn" onclick="upEffect('rabbit',this)"><span class="emoji">🐰</span>Rabbit</button>
+                <button class="choice-btn" onclick="upEffect('robot',this)"><span class="emoji">🤖</span>Robot</button>
+                <button class="choice-btn" onclick="upEffect('monster',this)"><span class="emoji">👹</span>Monster</button>
+                <button class="choice-btn" onclick="upEffect('ghost',this)"><span class="emoji">👻</span>Ghost</button>
+                <button class="choice-btn" onclick="upEffect('baby',this)"><span class="emoji">👶</span>Baby</button>
+                <button class="choice-btn" onclick="upEffect('alien',this)"><span class="emoji">👽</span>Alien</button>
+                <button class="choice-btn" onclick="upEffect('helium',this)"><span class="emoji">🎈</span>Helium</button>
+            </div>
+        </div>
+
+        <div class="card hidden" id="upResultCard">
+            <div class="card-title">🎭 Transformed Audio</div>
+            <audio id="upResultAudio" controls></audio>
+            <button class="btn btn-green" onclick="downloadUp()" style="margin-top:8px">💾 Download</button>
+        </div>
+
+        <div id="upStatus" class="status"></div>
+    </div>
+
+</div>
+
+<script>
+// ============================================
+// STATE
+// ============================================
+let lang = 'en-US';
+let voice = 'normal';
+let emotion = 'neutral';
+let voices = [];
+let recBlob = null;
+let upBuffer = null;
+let ttsBlob = null;
+let recResultBlob = null;
+let upResultBlob = null;
+
+// Recording state
+let mediaRec = null;
+let recChunks = [];
+let isRec = false;
+let recSec = 0;
+let recInterval = null;
+let analyserNode = null;
+let animFrame = null;
+
+// Presets
+const VP = {
+    normal:   {p:1.0, r:1.0},
+    chipmunk: {p:1.8, r:1.5},
+    frog:     {p:0.4, r:0.7},
+    rabbit:   {p:1.5, r:1.7},
+    robot:    {p:0.7, r:0.85},
+    monster:  {p:0.3, r:0.55},
+    ghost:    {p:0.6, r:0.65},
+    baby:     {p:1.7, r:1.3},
+    alien:    {p:1.4, r:1.1},
+    demon:    {p:0.25, r:0.5},
+    giant:    {p:0.35, r:0.6},
+    helium:   {p:2.0, r:1.4}
+};
+
+const EP = {
+    neutral:  {pm:0,    rm:0,    vm:0},
+    happy:    {pm:0.15, rm:0.2,  vm:0},
+    sad:      {pm:-0.1, rm:-0.2, vm:0},
+    angry:    {pm:0.05, rm:0.15, vm:0},
+    scared:   {pm:0.2,  rm:0.25, vm:0},
+    excited:  {pm:0.2,  rm:0.3,  vm:0},
+    whisper:  {pm:0,    rm:-0.3, vm:-0.4},
+    dramatic: {pm:-0.05,rm:-0.3, vm:0}
+};
+
+const FX = {
+    chipmunk: {ps:1.8, pr:1.4},
+    frog:     {ps:0.5, pr:0.75},
+    rabbit:   {ps:1.6, pr:1.6},
+    robot:    {ps:0.8, pr:0.9, ring:50},
+    monster:  {ps:0.4, pr:0.55},
+    ghost:    {ps:0.65,pr:0.7},
+    baby:     {ps:1.8, pr:1.25},
+    alien:    {ps:1.4, pr:1.05, ring:30},
+    helium:   {ps:2.0, pr:1.3}
+};
+
+// ============================================
+// VOICE LOADING
+// ============================================
+function loadVoices() {
+    voices = speechSynthesis.getVoices();
+    console.log('Voices loaded:', voices.length);
+    let hi = voices.filter(v => v.lang.startsWith('hi'));
+    if (hi.length) console.log('Hindi voices:', hi.map(v=>v.name));
+}
+
+loadVoices();
+speechSynthesis.onvoiceschanged = loadVoices;
+setTimeout(loadVoices, 500);
+setTimeout(loadVoices, 1500);
+
+function getVoice(l) {
+    if (!voices.length) voices = speechSynthesis.getVoices();
+    if (l === 'hi-IN') {
+        return voices.find(v=>v.lang==='hi-IN') ||
+               voices.find(v=>v.lang.startsWith('hi')) ||
+               voices.find(v=>v.name.toLowerCase().includes('hindi')) || null;
+    }
+    return voices.find(v=>v.lang===l) ||
+           voices.find(v=>v.lang.startsWith(l.split('-')[0])) || null;
+}
+
+// ============================================
+// TAB / SELECTION
+// ============================================
+function openTab(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab-'+id).classList.add('active');
+    btn.classList.add('active');
+}
+
+function pickLang(l, btn) {
+    lang = l;
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if (l==='hi-IN') {
+        let v = getVoice('hi-IN');
+        setStatus('ttsStatus', v ? '✅ Hindi voice: '+v.name : '⚠️ No Hindi voice found. Install Google TTS app.', v?'ok':'err');
+    }
+}
+
+function pickVoice(v, btn) {
+    voice = v;
+    document.querySelectorAll('#tab-tts .grid-3 .choice-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('pitchSlider').value = VP[v].p;
+    document.getElementById('speedSlider').value = VP[v].r;
+    document.getElementById('pitchVal').textContent = VP[v].p;
+    document.getElementById('speedVal').textContent = VP[v].r;
+}
+
+function pickEmotion(e, btn) {
+    emotion = e;
+    document.querySelectorAll('.grid-4 .choice-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function fillText(t) {
+    document.getElementById('ttsText').value = t;
+    // auto detect language
+    if (/[\u0900-\u097F]/.test(t)) {
+        pickLang('hi-IN', document.querySelectorAll('.lang-btn')[1]);
+    } else if (/\b(hai|kya|bhai|yaar|accha|mast|bahut|mujhe|aaj|tera|mera)\b/i.test(t)) {
+        pickLang('hinglish', document.querySelectorAll('.lang-btn')[2]);
+    } else {
+        pickLang('en-US', document.querySelectorAll('.lang-btn')[0]);
+    }
+}
+
+function setStatus(id, msg, type) {
+    let el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = 'status ' + (type||'');
+}
+
+// ============================================
+// HINGLISH SPLITTER
+// ============================================
+const HINDI_WORDS = new Set([
+    'hai','kya','bhai','yaar','accha','mast','bahut','mujhe','aaj','kal',
+    'tum','hum','mein','main','tera','mera','kaise','kaisa','haan','nahi',
+    'naa','aur','lekin','par','kyun','kyu','kahan','kab','kitna','woh',
+    'yeh','apna','apni','khana','peena','jana','aana','karna','dena',
+    'lena','bolna','sunna','dekhna','suno','dekho','chalo','batao','bolo',
+    'ruko','jao','mat','theek','bilkul','zaroor','abhi','phir','toh','na',
+    'scene','mausam','dost','paisa','kaam','ghar','bohot','sab','koi',
+    'kuch','ye','wo','matlab','pata','chal','bata','ek','do','haal',
+    'ho','hota','hoti','kar','karke','wala','wali','wale','ka','ki','ke',
+    'ko','me','se','raha','rahi','tha','thi','achha','log'
+]);
+
+function splitHinglish(text) {
+    let words = text.split(/\s+/);
+    let segs = [];
+    let cur = {lang:null, text:''};
+
+    words.forEach(w => {
+        let clean = w.replace(/[.,!?;:'"()]/g,'').toLowerCase();
+        let l = /[\u0900-\u097F]/.test(w) ? 'hi-IN' :
+                HINDI_WORDS.has(clean) ? 'hi-IN' : 'en-US';
+
+        if (cur.lang === l) { cur.text += ' ' + w; }
+        else { if (cur.text) segs.push({...cur}); cur = {lang:l, text:w}; }
+    });
+
+    if (cur.text) segs.push(cur);
+    return segs;
+}
+
+// ============================================
+// TTS - SPEAK
+// ============================================
+function utterOne(text, l, pitch, rate, vol) {
+    return new Promise(resolve => {
+        let u = new SpeechSynthesisUtterance(text);
+        u.lang = l;
+        u.pitch = Math.max(0.1, Math.min(2, pitch));
+        u.rate = Math.max(0.1, Math.min(3, rate));
+        u.volume = Math.max(0.1, Math.min(1, vol));
+
+        let v = getVoice(l);
+        if (v) u.voice = v;
+
+        u.onend = () => resolve();
+        u.onerror = (e) => {
+            console.error('TTS error:', e.error);
+            resolve();
+        };
+
+        speechSynthesis.speak(u);
+
+        // Chrome fix: keeps speech alive
+        let fix = setInterval(() => {
+            if (!speechSynthesis.speaking) { clearInterval(fix); return; }
+            speechSynthesis.pause();
+            speechSynthesis.resume();
+        }, 10000);
+
+        u.onend = () => { clearInterval(fix); resolve(); };
+    });
+}
+
+async function doSpeak() {
+    let text = document.getElementById('ttsText').value.trim();
+    if (!text) { setStatus('ttsStatus','⚠️ Type something first!','err'); return; }
+
+    speechSynthesis.cancel();
+
+    let p = parseFloat(document.getElementById('pitchSlider').value);
+    let r = parseFloat(document.getElementById('speedSlider').value);
+    let v = parseFloat(document.getElementById('volSlider').value);
+
+    let e = EP[emotion];
+    p = Math.max(0.1, Math.min(2, p + e.pm));
+    r = Math.max(0.1, Math.min(3, r + e.rm));
+    v = Math.max(0.1, Math.min(1, v + e.vm));
+
+    // UI
+    let btn = document.getElementById('speakBtn');
+    btn.classList.add('speaking');
+    btn.innerHTML = '🔊 Speaking...';
+    document.getElementById('stopBtn').classList.remove('hidden');
+    setStatus('ttsStatus', '🔊 Speaking... (pitch:'+p.toFixed(1)+' speed:'+r.toFixed(1)+')','wait');
+
+    if (lang === 'hinglish') {
+        let segs = splitHinglish(text);
+        for (let i=0; i<segs.length; i++) {
+            setStatus('ttsStatus', '🔊 Part '+(i+1)+'/'+segs.length+': "'+segs[i].text+'" ['+
+                (segs[i].lang==='hi-IN'?'Hindi':'English')+']', 'wait');
+            await utterOne(segs[i].text, segs[i].lang, p, r, v);
+            await new Promise(x=>setTimeout(x,200));
+        }
+    } else {
+        await utterOne(text, lang, p, r, v);
+    }
+
+    btn.classList.remove('speaking');
+    btn.innerHTML = '🔊 Speak It!';
+    document.getElementById('stopBtn').classList.add('hidden');
+    setStatus('ttsStatus','✅ Done!','ok');
+}
+
+function doStop() {
+    speechSynthesis.cancel();
+    let btn = document.getElementById('speakBtn');
+    btn.classList.remove('speaking');
+    btn.innerHTML = '🔊 Speak It!';
+    document.getElementById('stopBtn').classList.add('hidden');
+    setStatus('ttsStatus','⏹ Stopped','');
+}
+
+// ============================================
+// CAPTURE TTS AUDIO FOR DOWNLOAD
+// ============================================
+async function captureAudio() {
+    let text = document.getElementById('ttsText').value.trim();
+    if (!text) { setStatus('ttsStatus','⚠️ Type something first!','err'); return; }
+
+    let capBtn = document.getElementById('captureBtn');
+    capBtn.innerHTML = '⏳ Recording... Keep quiet!';
+    capBtn.disabled = true;
+
+    setStatus('ttsStatus','🎙️ Getting microphone...','wait');
+
+    try {
+        let stream = await navigator.mediaDevices.getUserMedia({audio:true});
+
+        let mr = new MediaRecorder(stream, {
+            mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+                ? 'audio/webm;codecs=opus' : 'audio/webm'
+        });
+
+        let chunks = [];
+        mr.ondataavailable = e => { if(e.data.size>0) chunks.push(e.data); };
+
+        mr.start();
+        setStatus('ttsStatus','🔊 Speaking & recording...','wait');
+
+        // Small delay to let recorder start
+        await new Promise(x=>setTimeout(x,300));
+
+        // Speak
+        let p = parseFloat(document.getElementById('pitchSlider').value);
+        let r = parseFloat(document.getElementById('speedSlider').value);
+        let v = parseFloat(document.getElementById('volSlider').value);
+        let e = EP[emotion];
+        p = Math.max(0.1, Math.min(2, p + e.pm));
+        r = Math.max(0.1, Math.min(3, r + e.rm));
+        v = Math.max(0.1, Math.min(1, v + e.vm));
+
+        if (lang === 'hinglish') {
+            let segs = splitHinglish(text);
+            for (let seg of segs) {
+                await utterOne(seg.text, seg.lang, p, r, v);
+                await new Promise(x=>setTimeout(x,200));
+            }
+        } else {
+            await utterOne(text, lang, p, r, v);
+        }
+
+        // Wait for audio tail
+        await new Promise(x=>setTimeout(x,500));
+
+        mr.stop();
+        stream.getTracks().forEach(t=>t.stop());
+
+        await new Promise(resolve => {
+            mr.onstop = () => {
+                ttsBlob = new Blob(chunks, {type:'audio/webm'});
+                let url = URL.createObjectURL(ttsBlob);
+                let player = document.getElementById('ttsPlayer');
+                player.src = url;
+                player.classList.remove('hidden');
+                document.getElementById('ttsDlBtn').classList.remove('hidden');
+                setStatus('ttsStatus','✅ Recorded! Play or download below.','ok');
+                resolve();
+            };
+        });
+
+    } catch(err) {
+        console.error(err);
+        setStatus('ttsStatus','❌ Mic access needed to record. Error: '+err.message,'err');
+    }
+
+    capBtn.innerHTML = '🎙️ Record Speech & Save';
+    capBtn.disabled = false;
+}
+
+function downloadTTS() {
+    if (!ttsBlob) { setStatus('ttsStatus','⚠️ Record first!','err'); return; }
+    dlBlob(ttsBlob, 'voice_changer_tts.webm');
+    setStatus('ttsStatus','✅ Downloaded!','ok');
+}
+
+// ============================================
+// RECORD TAB
+// ============================================
+async function toggleRec() {
+    if (isRec) stopRec(); else startRec();
+}
+
+async function startRec() {
+    try {
+        let stream = await navigator.mediaDevices.getUserMedia({audio:true});
+
+        let actx = new (window.AudioContext||window.webkitAudioContext)();
+        let src = actx.createMediaStreamSource(stream);
+        analyserNode = actx.createAnalyser();
+        analyserNode.fftSize = 256;
+        src.connect(analyserNode);
+
+        mediaRec = new MediaRecorder(stream);
+        recChunks = [];
+
+        mediaRec.ondataavailable = e => { if(e.data.size>0) recChunks.push(e.data); };
+
+        mediaRec.onstop = () => {
+            recBlob = new Blob(recChunks, {type:'audio/webm'});
+            document.getElementById('recAudio').src = URL.createObjectURL(recBlob);
+            show('recPlayCard');
+            show('recFxCard');
+            setStatus('recStatus','✅ Saved! Pick an effect below.','ok');
+            stream.getTracks().forEach(t=>t.stop());
+        };
+
+        mediaRec.start();
+        isRec = true;
+        recSec = 0;
+
+        document.getElementById('recBtn').classList.add('recording');
+        document.getElementById('recBtn').innerHTML = '⏹️ Stop Recording';
+
+        recInterval = setInterval(() => {
+            recSec++;
+            let m = String(Math.floor(recSec/60)).padStart(2,'0');
+            let s = String(recSec%60).padStart(2,'0');
+            document.getElementById('recTimer').textContent = m+':'+s;
+        }, 1000);
+
+        drawWave();
+        setStatus('recStatus','🎙️ Recording... Speak now!','wait');
+
+    } catch(err) {
+        setStatus('recStatus','❌ Mic access denied!','err');
+    }
+}
+
+function stopRec() {
+    if (mediaRec && mediaRec.state !== 'inactive') mediaRec.stop();
+    isRec = false;
+    clearInterval(recInterval);
+    cancelAnimationFrame(animFrame);
+    document.getElementById('recBtn').classList.remove('recording');
+    document.getElementById('recBtn').innerHTML = '🎙️ Start Recording';
+}
+
+function drawWave() {
+    let canvas = document.getElementById('waveCanvas');
+    let ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth * 2;
+    canvas.height = canvas.offsetHeight * 2;
+    let bufLen = analyserNode.frequencyBinCount;
+    let data = new Uint8Array(bufLen);
+
+    function draw() {
+        if (!isRec) return;
+        animFrame = requestAnimationFrame(draw);
+        analyserNode.getByteTimeDomainData(data);
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#6C63FF';
+        ctx.beginPath();
+        let sw = canvas.width / bufLen;
+        let x = 0;
+        for (let i=0; i<bufLen; i++) {
+            let y = (data[i]/128.0) * canvas.height/2;
+            i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+            x += sw;
+        }
+        ctx.stroke();
+    }
+    draw();
+}
+
+// ============================================
+// AUDIO EFFECTS (Record & Upload)
+// ============================================
+async function recEffect(fx, btn) {
+    if (!recBlob) { setStatus('recStatus','⚠️ Record first!','err'); return; }
+    document.querySelectorAll('#recFxCard .choice-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    setStatus('recStatus','⏳ Processing '+fx+'...','wait');
+
+    try {
+        let actx = new (window.AudioContext||window.webkitAudioContext)();
+        let arr = await recBlob.arrayBuffer();
+        let buf = await actx.decodeAudioData(arr);
+        let out = processBuffer(actx, buf, FX[fx]);
+
+        recResultBlob = bufToWav(out);
+        document.getElementById('recResultAudio').src = URL.createObjectURL(recResultBlob);
+        show('recResultCard');
+        setStatus('recStatus','✅ '+fx+' applied! Listen & download.','ok');
+    } catch(err) {
+        setStatus('recStatus','❌ Error: '+err.message,'err');
+    }
+}
+
+async function handleFile(input) {
+    let file = input.files[0];
+    if (!file) return;
+
+    document.getElementById('upAudio').src = URL.createObjectURL(file);
+    show('upPlayCard');
+    show('upFxCard');
+
+    try {
+        let actx = new (window.AudioContext||window.webkitAudioContext)();
+        let arr = await file.arrayBuffer();
+        upBuffer = await actx.decodeAudioData(arr);
+        setStatus('upStatus','✅ Loaded! Pick an effect.','ok');
+    } catch(err) {
+        setStatus('upStatus','❌ Cannot read file: '+err.message,'err');
+    }
+}
+
+async function upEffect(fx, btn) {
+    if (!upBuffer) { setStatus('upStatus','⚠️ Upload first!','err'); return; }
+    document.querySelectorAll('#upFxCard .choice-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    setStatus('upStatus','⏳ Processing...','wait');
+
+    try {
+        let actx = new (window.AudioContext||window.webkitAudioContext)();
+        let out = processBuffer(actx, upBuffer, FX[fx]);
+        upResultBlob = bufToWav(out);
+        document.getElementById('upResultAudio').src = URL.createObjectURL(upResultBlob);
+        show('upResultCard');
+        setStatus('upStatus','✅ Done!','ok');
+    } catch(err) {
+        setStatus('upStatus','❌ Error: '+err.message,'err');
+    }
+}
+
+// Core pitch/speed processor
+function processBuffer(actx, buf, fx) {
+    let ch = buf.numberOfChannels;
+    let sr = buf.sampleRate;
+    let len = buf.length;
+    let ps = fx.ps;
+    let pr = fx.pr;
+
+    let newLen = Math.max(1, Math.round(len / (ps * pr)));
+    let out = actx.createBuffer(ch, newLen, sr);
+
+    for (let c=0; c<ch; c++) {
+        let old = buf.getChannelData(c);
+        let nw = out.getChannelData(c);
+
+        for (let i=0; i<newLen; i++) {
+            let pos = i * ps * pr;
+            let idx = Math.floor(pos);
+            let frac = pos - idx;
+
+            if (idx+1 < len) {
+                nw[i] = old[idx]*(1-frac) + old[idx+1]*frac;
+            } else if (idx < len) {
+                nw[i] = old[idx];
+            }
+        }
+
+        // Ring mod
+        if (fx.ring) {
+            for (let i=0; i<newLen; i++) {
+                nw[i] *= Math.sin(2 * Math.PI * fx.ring * i / sr);
+            }
+        }
+
+        // Normalize
+        let mx = 0;
+        for (let i=0; i<newLen; i++) mx = Math.max(mx, Math.abs(nw[i]));
+        if (mx > 0) for (let i=0; i<newLen; i++) nw[i] /= mx;
+    }
+
+    return out;
+}
+
+// ============================================
+// WAV ENCODER
+// ============================================
+function bufToWav(buf) {
+    let ch = buf.numberOfChannels;
+    let sr = buf.sampleRate;
+    let samples;
+
+    if (ch === 2) {
+        let L = buf.getChannelData(0), R = buf.getChannelData(1);
+        samples = new Float32Array(L.length*2);
+        for (let i=0; i<L.length; i++) { samples[i*2]=L[i]; samples[i*2+1]=R[i]; }
+    } else {
+        samples = buf.getChannelData(0);
+    }
+
+    let dLen = samples.length * 2;
+    let ab = new ArrayBuffer(44 + dLen);
+    let v = new DataView(ab);
+
+    wStr(v,0,'RIFF'); v.setUint32(4,36+dLen,true);
+    wStr(v,8,'WAVE'); wStr(v,12,'fmt ');
+    v.setUint32(16,16,true); v.setUint16(20,1,true);
+    v.setUint16(22,ch,true); v.setUint32(24,sr,true);
+    v.setUint32(28,sr*ch*2,true); v.setUint16(32,ch*2,true);
+    v.setUint16(34,16,true); wStr(v,36,'data');
+    v.setUint32(40,dLen,true);
+
+    let o = 44;
+    for (let i=0; i<samples.length; i++) {
+        let s = Math.max(-1, Math.min(1, samples[i]));
+        v.setInt16(o, s<0 ? s*0x8000 : s*0x7FFF, true);
+        o += 2;
+    }
+
+    return new Blob([ab], {type:'audio/wav'});
+}
+
+function wStr(v,o,s) { for(let i=0;i<s.length;i++) v.setUint8(o+i,s.charCodeAt(i)); }
+
+// ============================================
+// DOWNLOAD
+// ============================================
+function downloadRec() {
+    if (recResultBlob) dlBlob(recResultBlob, 'voice_record_fx.wav');
+}
+
+function downloadUp() {
+    if (upResultBlob) dlBlob(upResultBlob, 'voice_upload_fx.wav');
+}
+
+function dlBlob(blob, name) {
+    let a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// ============================================
+// HELPERS
+// ============================================
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
+</script>
+
+</body>
+</html>
